@@ -1,0 +1,31 @@
+.solveInterface {
+  background-color: #09152b;
+  border: 1px solid #eee;
+  text-align: center;
+  color: #eee;
+
+  width: 35%;
+  height: 30%;
+  
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  display: none;
+  flex-direction: column;
+  justify-content: stretch;
+  /* make draggable... eventually */
+}
+
+#interfaceSettings {
+  height: 100%;
+  padding: 10px 5px;
+  border-top: 1px solid #eee;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  overflow-x: auto;
+}

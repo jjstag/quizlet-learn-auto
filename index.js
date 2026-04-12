@@ -8,3 +8,111 @@
 // @author      -
 // @description 4/9/2026, 8:54:12 PM
 // ==/UserScript==
+
+const siteEl = document.querySelector("main");
+const parent = document.querySelector(".awvskt8");
+
+const solveBtn = document.createElement("button");
+solveBtn.textContent = "Open Interface";
+parent.appendChild(solveBtn);
+
+function loadSolveInterface() {
+  const solveInterface = document.createElement("div");
+  solveInterface.classList.add("solveInterface");
+
+  const interfaceTitle = document.createElement("h4");
+  interfaceTitle.textContent = "Quizlet Auto";
+
+  const interfaceSettings = document.createElement("div");
+  interfaceSettings.id = "interfaceSettings";
+
+  const speedLabel = document.createElement("label");
+  speedLabel.textContent = "Speed (sec/card)";
+
+  const speed = document.createElement("input");
+  speed.classList.add("speedSlider");
+  speed.type = "range";
+  speed.max = 10;
+  speed.min = 2;
+
+  const beginBtn = document.createElement("button");
+  beginBtn.id = "beginBtn";
+  beginBtn.textContent = "Begin";
+
+  siteEl.appendChild(solveInterface);
+  solveInterface.appendChild(interfaceTitle);
+  solveInterface.appendChild(interfaceSettings);
+  interfaceSettings.appendChild(speedLabel);
+  speedLabel.appendChild(speed);
+  interfaceSettings.appendChild(beginBtn);
+
+  beginBtn.addEventListener("click", () => {});
+}
+
+function toggleSolveInterface() {
+  const solveInterface = document.querySelector(".solveInterface");
+  switch (solveInterface.style.display) {
+    case "none":
+      solveInterface.style.display = "flex";
+      break;
+    case "flex":
+      solveInterface.style.display = "none";
+      break;
+    default:
+      console.log("Could not find solveInterface display value");
+      break;
+  }
+}
+
+loadSolveInterface();
+
+// BELOW HERE LIES THE LOGIC
+
+let cards = getCardSides()
+
+solveLearnMCQQuestion()
+
+solveBtn.addEventListener("click", toggleSolveInterface);
+
+// BELOW HERE LIES THE LOGIC FUNCTIONS
+
+function getCardSides() {
+  // creates an object containing term-definition pairs to the cards
+  const text = document.querySelector("#__NEXT_DATA__").textContent;
+  const json = JSON.parse(text);
+  console.log(json);
+
+  let cardSides = {};
+  for (let obj of json.props.pageProps.studyModesCommon.studiableDocumentData
+    .studiableItems) {
+    cardSides[obj.cardSides[0].media[0].plainText] =
+      obj.cardSides[1].media[0].plainText;
+  }
+  return cardSides;
+}
+
+// may need to rename if terms are also displayed
+function getCardDefinition() {
+  return document.querySelector("div.tztbvpx.c10andea").firstElementChild
+    .firstElementChild.textContent;
+}
+
+// this as well
+function getCardTerms() {
+  return document.querySelectorAll(".c10andea:not(.tztbvpx)");
+}
+
+function solveLearnMCQQuestion() {
+  let termElements = getCardTerms();
+  for (let element of termElements) {
+    if (cards[element.firstElementChild.textContent] === getCardDefinition()) {
+      element.parentElement.parentElement.click();
+      break;
+    } else {
+      console.log(
+        `Term does not match: ${element.firstElementChild.textContent}`,
+      );
+      continue;
+    }
+  }
+}
