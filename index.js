@@ -66,13 +66,11 @@ function toggleSolveInterface() {
 
 loadSolveInterface();
 
+solveBtn.addEventListener("click", toggleSolveInterface);
+
 // BELOW HERE LIES THE LOGIC
 
 let cards = getCardSides()
-
-solveLearnMCQQuestion()
-
-solveBtn.addEventListener("click", toggleSolveInterface);
 
 // BELOW HERE LIES THE LOGIC FUNCTIONS
 
@@ -98,14 +96,15 @@ function getCardDefinition() {
 }
 
 // this as well
-function getCardTerms() {
+function getCardTermElements() {
   return document.querySelectorAll(".c10andea:not(.tztbvpx)");
 }
 
 function solveLearnMCQQuestion() {
-  let termElements = getCardTerms();
+  const cardDefinition = getCardDefinition()
+  const termElements = getCardTermElements();
   for (let element of termElements) {
-    if (cards[element.firstElementChild.textContent] === getCardDefinition()) {
+    if (cards[element.firstElementChild.textContent] === cardDefinition) {
       element.parentElement.parentElement.click();
       break;
     } else {
@@ -114,5 +113,29 @@ function solveLearnMCQQuestion() {
       );
       continue;
     }
+  }
+}
+
+function solveLearnTypingQuestion() {
+  const cardDefinition = getCardDefinition()
+  const answerButton = document.querySelector(".bzw8vcf.al737zk.m1uk72q9.a1pkfvc7")
+  const input = document.querySelector("input.i1gvzg80")
+  const term = Object.keys(cards).find(t => cards[t] === cardDefinition)
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set
+  // setTimeout(() => {
+    setter.call(input, term)
+  // }, 2000);
+  // setTimeout(() => {
+    answerButton.click()
+  // }, 4000);
+}
+
+function solveQuestion() {
+  if (document.querySelector(".c10andea:not(.tztbvpx)")) {
+    solveLearnMCQQuestion()
+  } else if (document.querySelector("input.i1gvzg80")) {
+    solveLearnTypingQuestion()
+  } else {
+    console.log("No question detected!")  
   }
 }
