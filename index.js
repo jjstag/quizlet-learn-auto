@@ -122,12 +122,9 @@ function solveLearnTypingQuestion() {
   const input = document.querySelector("input.i1gvzg80")
   const term = Object.keys(cards).find(t => cards[t] === cardDefinition)
   const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set
-  // setTimeout(() => {
-    setter.call(input, term)
-  // }, 2000);
-  // setTimeout(() => {
-    answerButton.click()
-  // }, 4000);
+  setter.call(input, term)
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  answerButton.click()
 }
 
 function solveQuestion() {
