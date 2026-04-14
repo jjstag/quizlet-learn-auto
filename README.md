@@ -12,7 +12,7 @@ I've never really worked with anything like this, so thank you for understanding
 
 1. make it actually work when ran as a userscript
 2. make it loop
-3. add support for typing questions
+3. add keybind configuration
 4. check if terms are also displayed. if so, rename functions / vars
 5. add support for speed slider
 6. attach styles to index.js

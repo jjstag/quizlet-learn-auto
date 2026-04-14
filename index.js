@@ -65,12 +65,62 @@ function toggleSolveInterface() {
 }
 
 loadSolveInterface();
-
 solveBtn.addEventListener("click", toggleSolveInterface);
+
+const cardParent = document.querySelector(".lox7wq0");
+function observeForLoad(mutationList) {
+  console.log("observe thing go off");
+  iterateMutations: for (const mutation of mutationList) {
+    for (const node of mutation.addedNodes) {
+      // if (node.parentElement?.parentElement?.classList.contains("t1qxthpf")) {
+      setTimeout(() => {
+        solveLearnQuestion();
+      }, 200);
+      // NEED. TO TEST. 0 MS.
+
+      break iterateMutations;
+      // } else {
+      // console.log(
+      // "node.parentElement.parentElement does not contain class 't1qxthpf'.",
+      // );
+      // }
+    }
+  }
+}
+const cardSwitchObserver = new MutationObserver(observeForLoad);
+
+let looping = false;
+
+function toggleLooping() {
+  if (looping) {
+    looping = false;
+    cardSwitchObserver.disconnect();
+  } else if (!looping) {
+    looping = true;
+    cardSwitchObserver.observe(cardParent, {
+      childList: true,
+      subtree: true,
+    });
+    solveLearnQuestion();
+  } else {
+    console.log("looping is neither truthy nor falsy.");
+  }
+}
+
+document.addEventListener("keydown", (key) => {
+  if (document.activeElement.prototype instanceof HTMLInputElement) {
+    console.log("Rightshift pressed, but active element is an input.");
+    return;
+  }
+  if (key.code === "ShiftRight") {
+    toggleLooping();
+    console.log("looping toggled.");
+  }
+});
 
 // BELOW HERE LIES THE LOGIC
 
-let cards = getCardSides()
+let cards = getCardSides();
 
 // BELOW HERE LIES THE LOGIC FUNCTIONS
 
@@ -91,8 +141,15 @@ function getCardSides() {
 
 // may need to rename if terms are also displayed
 function getCardDefinition() {
-  return document.querySelector("div.tztbvpx.c10andea").firstElementChild
-    .firstElementChild.textContent;
+  let classElement;
+  if (document.querySelector("div.tztbvpx.c10andea")) {
+    classElement = document.querySelector("div.tztbvpx.c10andea");
+  } else if (document.querySelector(".t1qxthpf")) {
+    classElement = document.querySelector("div.t1qxthpf");
+  }
+  const definition =
+    classElement.firstElementChild.firstElementChild.textContent;
+  return definition;
 }
 
 // this as well
@@ -101,7 +158,7 @@ function getCardTermElements() {
 }
 
 function solveLearnMCQQuestion() {
-  const cardDefinition = getCardDefinition()
+  const cardDefinition = getCardDefinition();
   const termElements = getCardTermElements();
   for (let element of termElements) {
     if (cards[element.firstElementChild.textContent] === cardDefinition) {
@@ -117,22 +174,28 @@ function solveLearnMCQQuestion() {
 }
 
 function solveLearnTypingQuestion() {
-  const cardDefinition = getCardDefinition()
-  const answerButton = document.querySelector(".bzw8vcf.al737zk.m1uk72q9.a1pkfvc7")
-  const input = document.querySelector("input.i1gvzg80")
-  const term = Object.keys(cards).find(t => cards[t] === cardDefinition)
-  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set
-  setter.call(input, term)
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-  answerButton.click()
+  const cardDefinition = getCardDefinition();
+  const answerButton = document.querySelector(
+    ".bzw8vcf.al737zk.m1uk72q9.a1pkfvc7",
+  );
+  const input = document.querySelector("input.i1gvzg80");
+  const term = Object.keys(cards).find((t) => cards[t] === cardDefinition);
+  const setter = Object.getOwnPropertyDescriptor(
+    HTMLInputElement.prototype,
+    "value",
+  ).set;
+  setter.call(input, term);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  answerButton.click();
 }
 
-function solveQuestion() {
+// ADD SUPPORT FOR THE ASSIGNED WEIRD ONE?
+function solveLearnQuestion() {
   if (document.querySelector(".c10andea:not(.tztbvpx)")) {
-    solveLearnMCQQuestion()
+    solveLearnMCQQuestion();
   } else if (document.querySelector("input.i1gvzg80")) {
-    solveLearnTypingQuestion()
+    solveLearnTypingQuestion();
   } else {
-    console.log("No question detected!")  
+    console.log("No question detected!");
   }
 }
