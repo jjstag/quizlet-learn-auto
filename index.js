@@ -77,6 +77,7 @@ function observeForLoad(mutationList) {
         solveLearnQuestion();
       }, 200);
       // NEED. TO TEST. 0 MS.
+      // scared to test 0ms. The lower I go, the laggier it gets, but it seems to function alright. Requires more testing.
 
       break iterateMutations;
       // } else {
@@ -93,9 +94,11 @@ let looping = false;
 
 function toggleLooping() {
   if (looping) {
+    console.log("looping toggled off.");
     looping = false;
     cardSwitchObserver.disconnect();
   } else if (!looping) {
+    console.log("looping toggled on.");
     looping = true;
     cardSwitchObserver.observe(cardParent, {
       childList: true,
@@ -114,7 +117,6 @@ document.addEventListener("keydown", (key) => {
   }
   if (key.code === "ShiftRight") {
     toggleLooping();
-    console.log("looping toggled.");
   }
 });
 
@@ -139,29 +141,29 @@ function getCardSides() {
   return cardSides;
 }
 
-// may need to rename if terms are also displayed
-function getCardDefinition() {
+function getCardHint() {
   let classElement;
   if (document.querySelector("div.tztbvpx.c10andea")) {
     classElement = document.querySelector("div.tztbvpx.c10andea");
   } else if (document.querySelector(".t1qxthpf")) {
     classElement = document.querySelector("div.t1qxthpf");
   }
-  const definition =
-    classElement.firstElementChild.firstElementChild.textContent;
-  return definition;
+  const hint = classElement.firstElementChild.firstElementChild.textContent;
+  return hint;
 }
 
-// this as well
-function getCardTermElements() {
+function getCardChoiceElements() {
   return document.querySelectorAll(".c10andea:not(.tztbvpx)");
 }
 
-function solveLearnMCQQuestion() {
-  const cardDefinition = getCardDefinition();
-  const termElements = getCardTermElements();
-  for (let element of termElements) {
-    if (cards[element.firstElementChild.textContent] === cardDefinition) {
+function getMCQMatchType() {
+  const MCQType = document.querySelector(".l2mud40").textContent;
+  return MCQType;
+}
+
+function solveLearnMCQTermQuestion(choices, definition) {
+  for (let element of choices) {
+    if (match(cards[element.firstElementChild.textContent] === definition)) {
       element.parentElement.parentElement.click();
       break;
     } else {
@@ -173,23 +175,55 @@ function solveLearnMCQQuestion() {
   }
 }
 
+function solveLearnMCQDefinitionQuestion(choices, definition) {
+  const term = Object.keys(cards).find((term) => cards[term] === definition);
+  for (let element of choices) {
+    if (element.firstElementChild.textContent === term) {
+      element.parentElement.parentElement.click();
+      break;
+    } else {
+      console.log(
+        `Definition does not match: ${element.firstElementChild.textContent}`,
+      );
+      continue;
+    }
+  }
+}
+
+function solveLearnMCQQuestion() {
+  const cardHint = getCardHint();
+  // can match use this scope? (no... ok...)
+  // fuck the other function cant have it either
+  const choiceElements = getCardChoiceElements();
+  const match = getMCQMatchType();
+  if (match === "Term") {
+    solveLearnMCQDefinitionQuestion(choiceElements, cardHint);
+  } else if (match === "Definition") {
+    solveLearnMCQDefinitionQuestion(choiceElements, cardHint);
+  } else {
+    console.log("Question type is neither 'Definition' nor 'Term'");
+  }
+}
+
 function solveLearnTypingQuestion() {
-  const cardDefinition = getCardDefinition();
+  const cardHint = getCardHint();
   const answerButton = document.querySelector(
     ".bzw8vcf.al737zk.m1uk72q9.a1pkfvc7",
   );
   const input = document.querySelector("input.i1gvzg80");
-  const term = Object.keys(cards).find((t) => cards[t] === cardDefinition);
+  const choice = Object.keys(cards).find((t) => cards[t] === cardHint);
   const setter = Object.getOwnPropertyDescriptor(
     HTMLInputElement.prototype,
     "value",
   ).set;
-  setter.call(input, term);
+  setter.call(input, choice);
   input.dispatchEvent(new Event("input", { bubbles: true }));
   answerButton.click();
 }
 
 // ADD SUPPORT FOR THE ASSIGNED WEIRD ONE?
+// fuck does this comment mean?
+// oh
 function solveLearnQuestion() {
   if (document.querySelector(".c10andea:not(.tztbvpx)")) {
     solveLearnMCQQuestion();

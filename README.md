@@ -11,12 +11,11 @@ I've never really worked with anything like this, so thank you for understanding
 ### TODO
 
 1. make it actually work when ran as a userscript
-2. make it loop
+2. make sure looping works correctly / refactor the ms timer
 3. add keybind configuration
-4. check if terms are also displayed. if so, rename functions / vars
-5. add support for speed slider
-6. attach styles to index.js
-7. edit userscript metadata
+4. add support for speed slider
+5. attach styles to index.js
+6. edit userscript metadata
 
 and i may have to refactor this to use webpack.
 
